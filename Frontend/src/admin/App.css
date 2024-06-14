@@ -1,0 +1,13 @@
+.list-group ul li:hover {
+  background-color: blue;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.list-group ul li:hover a {
+  color: greenyellow;
+}
+.active {
+  background-color: blue;
+  border-radius: 5px;
+  color: greenyellow;
+}

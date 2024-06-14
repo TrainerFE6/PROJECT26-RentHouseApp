@@ -1,0 +1,12 @@
+.sidebar ul li:hover {
+  background-color: blue;
+  border-radius: 5px;
+}
+.sidebar ul li:hover a {
+  color: white;
+}
+.active {
+  background-color: rgb(31, 188, 231);
+  border-radius: 5px;
+  color: white;
+}
