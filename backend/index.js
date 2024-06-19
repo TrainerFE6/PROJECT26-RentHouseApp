@@ -33,6 +33,5 @@ app.use(transactionRoute);
 app.use(PersonalInfo);
 app.use(contactUsRoutes);
 app.use(ApplyRentRoutes);
-app.use(Room);
 app.use("/api", router);
 app.listen(5000, () => console.log("Server running at port 5000"));
