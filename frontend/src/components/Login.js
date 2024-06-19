@@ -14,7 +14,7 @@ import {
 } from "../styles/LoginStyles";
 import { Link } from "react-router-dom";
 
-const LoginPage = () => {
+const LoginPage = ({ setIsLoggedIn, setIsAdmin }) => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -32,10 +32,12 @@ const LoginPage = () => {
         { withCredentials: true }
       );
       const role = response.data.role;
+      setIsLoggedIn(true);
       if (role === "admin") {
+        setIsAdmin(true);
         navigate("/dashboard");
       } else {
-        navigate("/home2");
+        navigate("/personalinfo");
       }
       console.log(response.data);
     } catch (error) {

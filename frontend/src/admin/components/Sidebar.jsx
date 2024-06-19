@@ -1,12 +1,26 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./app.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { Link } from "react-router-dom";
 import Image from "react-bootstrap/Image";
 import ImgAbout from "./assets/image/Frame 4.png";
-
+import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 function Sidebar() {
   const [active, setActive] = useState(1);
+  const [admin, setAdmin] = useState("");
+  const [, setToken] = useState("");
+
+  useEffect(() => {
+    const getToken = async () => {
+      const response = await axios.get("http://localhost:5000/token");
+      setToken(response.data.accessToken);
+      const decoded = jwtDecode(response.data.accessToken);
+      setAdmin(decoded.username);
+    };
+    getToken();
+  }, []);
+
   return (
     <div
       className="sidebar d-flex justify-content-between flex-column  text-white vh-100"
@@ -21,7 +35,7 @@ function Sidebar() {
             roundedCircle
           />
           <br></br>
-          <span className="brand-name fs-4">Ibu Fitriani</span>
+          <span className="brand-name fs-4"> {admin}</span>
         </div>
 
         <hr className="text-secondary mt-2" />

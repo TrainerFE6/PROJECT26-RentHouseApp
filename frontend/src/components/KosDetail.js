@@ -67,7 +67,11 @@ const KosDetail = () => {
                   <Card.Text>
                     <strong>{kos.owner}</strong>
                   </Card.Text>
-                  <Button variant="primary" className="m-2">
+                  <Button
+                    variant="primary"
+                    className="m-2"
+                    href="https://wa.link/duu4zb"
+                  >
                     Chat Pemilik
                   </Button>
                   <br />

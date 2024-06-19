@@ -1,17 +1,20 @@
-import Login from "../models/loginModel.js"; 
+// loginController.js
+import Login from "../models/loginModel.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 export const register = async (req, res) => {
   try {
-    const { username, email, password, confPassword } = req.body;
-    if (password !== confPassword) return res.status(400).json({ msg: "Passwords do not match" });
+    const { username, email, password, confPassword, role } = req.body;
+    if (password !== confPassword)
+      return res.status(400).json({ msg: "Passwords do not match" });
     const salt = await bcrypt.genSalt();
     const hashPassword = await bcrypt.hash(password, salt);
     await Login.create({
-      username: username,
-      email: email,
+      username,
+      email,
       password: hashPassword,
+      role, // Ensure role is saved
     });
     res.json({ msg: "Registration successful" });
   } catch (error) {
@@ -34,14 +37,22 @@ export const login = async (req, res) => {
     const userId = user.id;
     const email = user.email;
     const username = user.username;
-    const role = user.role;
+    const role = user.role; // Ensure role is included
 
-    const accessToken = jwt.sign({ userId, email, username, role }, process.env.ACCESS_TOKEN_SECRET, {
-      expiresIn: "20s",
-    });
-    const refreshToken = jwt.sign({ userId, email, username, role }, process.env.REFRESH_TOKEN_SECRET, {
-      expiresIn: "1d",
-    });
+    const accessToken = jwt.sign(
+      { userId, email, username, role },
+      process.env.ACCESS_TOKEN_SECRET,
+      {
+        expiresIn: "20s",
+      }
+    );
+    const refreshToken = jwt.sign(
+      { userId, email, username, role },
+      process.env.REFRESH_TOKEN_SECRET,
+      {
+        expiresIn: "1d",
+      }
+    );
 
     await Login.update(
       { refresh_token: refreshToken },
@@ -74,17 +85,25 @@ export const refreshToken = async (req, res) => {
     });
     if (!user) return res.sendStatus(403);
 
-    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, decoded) => {
-      if (err) return res.sendStatus(403);
-      const userId = user.id;
-      const email = user.email;
-      const username = user.username;
-      const role = user.role;
-      const accessToken = jwt.sign({ userId, email, username, role }, process.env.ACCESS_TOKEN_SECRET, {
-        expiresIn: "20s",
-      });
-      res.json({ accessToken });
-    });
+    jwt.verify(
+      refreshToken,
+      process.env.REFRESH_TOKEN_SECRET,
+      (err, decoded) => {
+        if (err) return res.sendStatus(403);
+        const userId = user.id;
+        const email = user.email;
+        const username = user.username;
+        const role = user.role;
+        const accessToken = jwt.sign(
+          { userId, email, username, role },
+          process.env.ACCESS_TOKEN_SECRET,
+          {
+            expiresIn: "20s",
+          }
+        );
+        res.json({ accessToken });
+      }
+    );
   } catch (error) {
     res.status(500).json({ msg: error.message });
   }

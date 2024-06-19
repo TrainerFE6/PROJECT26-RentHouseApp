@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from "styled-components";
 
 export const Section = styled.section`
   padding: 40px 20px;
@@ -41,14 +41,14 @@ export const FAQItem = styled.div`
 
 export const Question = styled.div`
   padding: 10px;
-  background-color: #4D869C;
+  background-color: #4d869c;
   color: white;
   cursor: pointer;
   border-radius: 4px;
   transition: background-color 0.3s;
 
   &:hover {
-    background-color: #4D869C;
+    background-color: #4d869c;
   }
 `;
 
@@ -74,13 +74,13 @@ export const ToggleButton = styled.button`
   margin: 0 10px;
   border: none;
   border-radius: 20px;
-  background-color: ${props => (props.active ? '#4D869C' : '#ddd')};
-  color: ${props => (props.active ? 'white' : 'black')};
+  background-color: ${(props) => (props.active ? "#4D869C" : "#ddd")};
+  color: ${(props) => (props.active ? "white" : "black")};
   cursor: pointer;
   font-size: 16px;
 
   &:hover {
-    background-color: ${props => (props.active ? '#4D869C' : '#ccc')};
+    background-color: ${(props) => (props.active ? "#4D869C" : "#ccc")};
   }
 
   @media screen and (max-width: 768px) {

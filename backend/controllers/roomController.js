@@ -169,7 +169,7 @@ export const deleteRoom = async (req, res) => {
         },
       });
       console.log("Room Deleted Successfully!");
-      // res.status(200).json({ msg: "Room Deleted Successfully!" });
+      res.status(200).json({ msg: "Room Deleted Successfully!" });
     } catch (err) {
       console.error("Error deleting room from database:", err);
       res.status(500).json({ msg: "Failed to delete room from database" });

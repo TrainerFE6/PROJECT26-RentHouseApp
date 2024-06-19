@@ -4,7 +4,7 @@ import db from "../config/database.js";
 const { DataTypes } = Sequelize;
 
 const Login = db.define(
-  "login", 
+  "login",
   {
     username: {
       type: DataTypes.STRING,
@@ -28,4 +28,4 @@ const Login = db.define(
   }
 );
 
-export default Login; // Mengubah nama export dari "User" menjadi "Login"
+export default Login;

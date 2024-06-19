@@ -20,6 +20,10 @@
     "fs": "^0.0.1-security",
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.10.0",
-    "sequelize": "^6.37.3"
+    "path": "^0.12.7",
+    "react-is": "^18.3.1",
+    "react-tooltip": "^5.26.4",
+    "sequelize": "^6.37.3",
+    "styled-components": "^6.1.11"
   }
 }

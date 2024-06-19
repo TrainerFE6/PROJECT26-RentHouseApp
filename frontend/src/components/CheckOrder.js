@@ -1,13 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { Container, Card, Button, Row, Col } from "react-bootstrap";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Container, Card, Button } from "react-bootstrap";
-import {
-  OrderCard,
-  ImageWrapper,
-  CardContent,
-  ButtonWrapper,
-  CenteredMessage,
-} from "../styles/CheckOrderStyles";
 
 const CheckOrder = () => {
   const location = useLocation();
@@ -21,17 +14,18 @@ const CheckOrder = () => {
   useEffect(() => {
     if (initialOrder) {
       const isDuplicate = orders.some(
-        (order) => JSON.stringify(order) === JSON.stringify(initialOrder)
+        (order) => order.kosName === initialOrder.kosName
       );
 
       if (!isDuplicate) {
-        setOrders((prevOrders) => [...prevOrders, initialOrder]);
+        const newOrders = [...orders, initialOrder].slice(-4); // Keep only the latest 4 orders
+        setOrders(newOrders);
         alert("Pesanan berhasil ditambahkan.");
       } else {
         alert("Pesanan sudah ada dalam daftar.");
       }
     }
-  }, [initialOrder]);
+  }, [initialOrder, orders]);
 
   useEffect(() => {
     localStorage.setItem("currentOrders", JSON.stringify(orders));
@@ -47,49 +41,59 @@ const CheckOrder = () => {
     }
   };
 
+  const handleDeleteAllOrders = () => {
+    if (window.confirm("Apakah Anda yakin ingin menghapus semua pesanan?")) {
+      setOrders([]);
+    }
+  };
+
   if (orders.length === 0) {
     return (
       <Container>
-        <CenteredMessage>Tidak ada pesanan untuk ditampilkan</CenteredMessage>
+        <div>Tidak ada pesanan untuk ditampilkan</div>
       </Container>
     );
   }
 
   return (
     <Container>
+      <Button variant="danger" className="mb-3" onClick={handleDeleteAllOrders}>
+        Hapus Semua Pesanan
+      </Button>
       {orders.map((order, index) => (
-        <OrderCard key={index}>
-          <ImageWrapper>
-            <img src={order.kosImage} alt={order.kosName} />
-          </ImageWrapper>
-          <CardContent>
-            <h2 className="kos-details">{order.kosName}</h2>
-            <Card.Text className="kos-details">
-              <strong>Nama Penyewa:</strong> {order.fullName}
-            </Card.Text>
-            <Card.Text className="kos-details">
-              <strong>Jenis Kelamin:</strong> {order.gender}
-            </Card.Text>
-            <Card.Text className="kos-details">
-              <strong>Alamat:</strong> {order.address}
-            </Card.Text>
-            <Card.Text className="kos-details">
-              <strong>No Telepon:</strong> {order.phone}
-            </Card.Text>
-            <ButtonWrapper>
-              <Button
-                className="mx-3"
-                variant="primary"
-                onClick={() => navigate("/confirm")}
-              >
-                Konfirmasi
-              </Button>
-              <Button variant="danger" onClick={() => handleDeleteOrder(index)}>
-                Hapus Pesanan
-              </Button>
-            </ButtonWrapper>
-          </CardContent>
-        </OrderCard>
+        <Card key={index} className="mb-3">
+          <Card.Body>
+            <Row>
+              <Col xs={3}>
+                <Card.Img src={order.kosImage} alt={order.kosName} />
+              </Col>
+              <Col xs={9}>
+                <Card.Title>{order.kosName}</Card.Title>
+                <Card.Text>
+                  <strong>Nama Penyewa:</strong> {order.fullName}
+                </Card.Text>
+                <Card.Text>
+                  <strong>Jenis Kelamin:</strong> {order.gender}
+                </Card.Text>
+                <Card.Text>
+                  <strong>Alamat:</strong> {order.address}
+                </Card.Text>
+                <Card.Text>
+                  <strong>No Telepon:</strong> {order.phone}
+                </Card.Text>
+                <Button variant="primary" onClick={() => navigate("/confirm")}>
+                  Konfirmasi
+                </Button>{" "}
+                <Button
+                  variant="danger"
+                  onClick={() => handleDeleteOrder(index)}
+                >
+                  Hapus Pesanan
+                </Button>
+              </Col>
+            </Row>
+          </Card.Body>
+        </Card>
       ))}
     </Container>
   );

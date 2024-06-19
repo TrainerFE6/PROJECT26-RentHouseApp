@@ -1,141 +1,234 @@
-import React, { useState } from "react";
-import { CDBCard, CDBCardBody, CDBDataTable, CDBContainer } from "cdbreact";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { Table, Container, Button, Form } from "react-bootstrap";
 import Image from "react-bootstrap/Image";
-import ImgAbout from "./assets/image/ktp sewa kos.png";
-import { Link } from "react-router-dom";
-// import { deleteUserData } from "./api";
-import { Button } from "react-bootstrap";
-// import { Link } from "react-router-dom";
+
 const Penyewakost = () => {
-  const [isEditing, setIsEditing] = useState(false);
+  const [penyewaKost, setPenyewaKost] = useState([]);
+  const [searchTerm, setSearchTerm] = useState(""); // State untuk nilai pencarian
 
-  const handleEditProfile = () => {
-    setIsEditing(true); // Set editing state to true
-    // Navigate to edit profile page
-  };
+  useEffect(() => {
+    const getPenyewaKost = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/apply-rent");
+        setPenyewaKost(response.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    getPenyewaKost();
+  }, []);
 
-  const handleDeleteProfile = () => {
-    // Display confirmation dialog
-    if (window.confirm("Are you sure you want to delete your profile?")) {
-      // deleteUserData(); // Call API function to delete user data
-      // Redirect to login page or handle logout
+  const deletePenyewa = async (id) => {
+    try {
+      await axios.delete(`http://localhost:5000/apply-rent/${id}`);
+      // Menghapus item yang dihapus dari state
+      setPenyewaKost(penyewaKost.filter((item) => item.id !== id));
+    } catch (error) {
+      console.error("Error deleting data:", error);
     }
   };
-  // function testClickEvent(param) {
-  //   alert("Row Click Event");
-  // }
 
-  const data = () => {
-    return {
-      columns: [
-        {
-          label: "No",
-          field: "no",
-
-          attributes: {
-            "aria-controls": "DataTable",
-            "aria-label": "No",
-          },
-        },
-        {
-          label: "Foto KTP",
-          field: "foto",
-        },
-        {
-          label: "Nama Penyewa",
-          field: "nama",
-        },
-        {
-          label: "Jenis Kelamin",
-          field: "jenis",
-        },
-
-        {
-          label: "Alamat",
-          field: "alamat",
-          sort: "asc",
-        },
-        {
-          label: "NO HP",
-          field: "hp",
-          sort: "disabled",
-        },
-        {
-          label: "Action",
-          field: "action",
-          sort: "disabled",
-        },
-      ],
-      rows: [
-        {
-          no: "1",
-          foto: (
-            <Image
-              src={ImgAbout}
-              style={{
-                height: "200px",
-                width: "300px",
-                justifyContent: "center",
-              }}
-              alt="Responsive Image"
-            />
-          ),
-          nama: "Novan Maulana",
-          jenis: "Laki-Laki",
-          alamat: "Semarang",
-          hp: "0856347343",
-          action: (
-            <div className="profile-actions">
-              <Button
-                variant="warning"
-                className="bi bi-pencil-square"
-              ></Button>
-              |<Button variant="danger" className="bi bi-trash "></Button>
-            </div>
-          ),
-          // clickEvent: () => testClickEvent(1),
-        },
-        {
-          no: "2",
-          foto: (
-            <Image
-              src={ImgAbout}
-              style={{
-                height: "200px",
-                width: "300px",
-                justifyContent: "center",
-              }}
-              alt="Responsive Image"
-            />
-          ),
-          nama: "putri",
-          jenis: "Perempuan",
-          alamat: "Boyolali",
-          hp: "00000000000",
-        },
-      ],
-    };
+  const handleSearchChange = (event) => {
+    setSearchTerm(event.target.value);
   };
+
+  const filteredPenyewaKost = penyewaKost.filter((item) =>
+    item.full_name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
-    <CDBContainer className="mt-5 min-vh-100">
-      <h3>Data Penyewa Kost</h3>
-      <CDBCard>
-        <CDBCardBody>
-          <CDBDataTable
-            className="table-responsive"
-            striped
-            bordered
-            hover
-            entriesOptions={[5, 20, 25]}
-            entries={5}
-            pagesAmount={4}
-            data={data()}
-            materialSearch={true}
+    <Container className="min-vh-100">
+      <h1
+        className="mb-3 text-primary fw-bold border-black pb-2 "
+        style={{ fontSize: "18px" }}
+      >
+        DATA PENYEWA KOST
+      </h1>
+      <Form className="mb-3">
+        <Form.Group className="mb-3" controlId="formBasicSearch">
+          <Form.Control
+            type="text"
+            placeholder="Cari berdasarkan nama lengkap..."
+            value={searchTerm}
+            onChange={handleSearchChange}
           />
-        </CDBCardBody>
-      </CDBCard>
-    </CDBContainer>
+        </Form.Group>
+      </Form>
+      <Table striped bordered hover responsive>
+        <thead>
+          <tr>
+            <th>Foto KTP</th>
+            <th>Nama Lengkap</th>
+            <th>Jenis Kelamin</th>
+            <th>Alamat</th>
+            <th>Nomor Telepon</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {filteredPenyewaKost.map((item, index) => (
+            <tr key={index}>
+              <td>
+                <img
+                  src={item.url}
+                  alt={`Foto ${item.full_name}`}
+                  style={{
+                    width: "400px",
+                    height: "300px",
+                    objectFit: "cover",
+                  }}
+                />
+              </td>
+              <td>{item.full_name}</td>
+              <td>{item.gender}</td>
+              <td>{item.address}</td>
+              <td>{item.phone}</td>
+              <td>
+                <Button
+                  variant="danger"
+                  className="bi bi-trash"
+                  onClick={() => deletePenyewa(item.id)}
+                >
+                  Delete
+                </Button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
+    </Container>
   );
 };
 
 export default Penyewakost;
+// import React, { useState, useEffect } from "react";
+// import axios from "axios";
+// import { Table, Container, Form, Button, Pagination } from "react-bootstrap";
+
+// const Penyewakost = () => {
+//   const [penyewaKost, setPenyewaKost] = useState([]);
+//   const [searchTerm, setSearchTerm] = useState("");
+//   const [currentPage, setCurrentPage] = useState(1);
+//   const [itemsPerPage, setItemsPerPage] = useState(5);
+
+//   useEffect(() => {
+//     const getTransaksi = async () => {
+//       try {
+//         const response = await axios.get("http://localhost:5000/penyewaKost");
+//         setPenyewaKost(response.data);
+//       } catch (error) {
+//         console.error("Error fetching data:", error);
+//       }
+//     };
+//     getTransaksi();
+//   }, []);
+
+//   const handleSearchChange = (e) => {
+//     setSearchTerm(e.target.value);
+//     setCurrentPage(1);
+//   };
+
+//   const handleDelete = (index) => {
+//     const updatedTransaksi = [...penyewaKost];
+//     updatedTransaksi.splice(index, 1);
+//     setPenyewaKost(updatedTransaksi);
+//   };
+
+//   const filteredTransaksi = penyewaKost.filter((item) =>
+//     item.fullName.toLowerCase().includes(searchTerm.toLowerCase())
+//   );
+
+//   const indexOfLastItem = currentPage * itemsPerPage;
+//   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+//   const currentItems = filteredTransaksi.slice(
+//     indexOfFirstItem,
+//     indexOfLastItem
+//   );
+
+//   const totalPages = Math.ceil(filteredTransaksi.length / itemsPerPage);
+
+//   return (
+//     <Container className="min-vh-100">
+//       <h1
+//         className="mb-3 text-primary fw-bold border-black pb-2"
+//         style={{ fontSize: "18px" }}
+//       >
+//         DATA TRANSAKSI
+//       </h1>
+//       <Form className="d-flex mb-3">
+//         <Form.Control
+//           type="search"
+//           placeholder="Search..."
+//           value={searchTerm}
+//           onChange={handleSearchChange}
+//         />
+//         <Form.Select
+//           className="ms-2"
+//           value={itemsPerPage}
+//           onChange={(e) => setItemsPerPage(e.target.value)}
+//         >
+//           <option value={5}>Show 5</option>
+//           <option value={10}>Show 10</option>
+//           <option value={15}>Show 15</option>
+//         </Form.Select>
+//       </Form>
+//       <Table striped bordered hover responsive>
+//         <thead>
+//           <tr>
+//             <th>No</th>
+//             <th>Foto KTP</th>
+//             <th>Nama Lengkap</th>
+//             <th>Jenis Kelamin</th>
+//             <th>Alamat</th>
+//             <th>Nomor Telepon</th>
+//             <th>Action</th>
+//           </tr>
+//         </thead>
+//         <tbody>
+//           {currentItems.map((item, index) => (
+//             <tr key={index}>
+//               <td>{indexOfFirstItem + index + 1}</td>
+//               <td>
+//                 <img
+//                   src={item.url}
+//                   alt={`Foto ${item.fullName}`}
+//                   style={{
+//                     width: "300px",
+//                     height: "500px",
+//                     objectFit: "cover",
+//                   }}
+//                 />
+//               </td>
+//               <td>{item.full_name}</td>
+//               <td>{item.gender}</td>
+//               <td>{item.address}</td>
+//               <td>{item.phone}</td>
+//               <td>
+//                 <Button
+//                   variant="danger"
+//                   onClick={() => handleDelete(indexOfFirstItem + index)}
+//                 >
+//                   Delete
+//                 </Button>
+//               </td>
+//             </tr>
+//           ))}
+//         </tbody>
+//       </Table>
+//       <Pagination>
+//         {[...Array(totalPages).keys()].map((pageNumber) => (
+//           <Pagination.Item
+//             key={pageNumber + 1}
+//             active={pageNumber + 1 === currentPage}
+//             onClick={() => setCurrentPage(pageNumber + 1)}
+//           >
+//             {pageNumber + 1}
+//           </Pagination.Item>
+//         ))}
+//       </Pagination>
+//     </Container>
+//   );
+// };
+
+// export default Penyewakost;

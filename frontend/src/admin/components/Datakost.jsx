@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { BsPencilSquare, BsTrash } from "react-icons/bs";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 
 const Room = () => {
   const [rooms, setRooms] = useState([]);
@@ -45,21 +46,25 @@ const Room = () => {
       </h1>
       <div className="row">
         {rooms.map((room) => (
-          <div key={room.id} className="col-md-4 mb-4">
+          <motion.div
+            key={room.id}
+            className="col-md-4 mb-4"
+            whileHover={{ scale: 1.05 }} // Animasi saat hover
+            whileTap={{ scale: 0.95 }} // Animasi saat di-tap (mobile)
+          >
             <div className="card">
               <img
                 src={room.url}
                 className="card-img-top"
                 alt="room"
-                style={{ width: "100%", height: "200px", objectFit: "cover" }}
+                style={{ objectFit: "cover", height: "200px" }}
               />
               <div className="card-body">
                 <h5 className="card-title">{room.kode}</h5>
                 <p className="card-text">
                   <strong>Tipe:</strong> {room.tipe} <br />
                   <strong>Fasilitas:</strong> {room.fasilitas} <br />
-                  <strong>Ukuran:</strong> {room.ukuran}
-                  <br />
+                  <strong>Ukuran:</strong> {room.ukuran} <br />
                   <strong>Harga:</strong> {room.price}
                 </p>
                 <div className="text-center">
@@ -78,7 +83,7 @@ const Room = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
     </div>

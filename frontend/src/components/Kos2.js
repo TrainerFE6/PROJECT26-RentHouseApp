@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Card, Pagination } from "react-bootstrap";
-import { SearchContainer, SearchInput } from "../styles/CariKosStyles";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 const Kos2 = () => {
   const navigate = useNavigate();
@@ -12,8 +13,13 @@ const Kos2 = () => {
   const [kamarKos, setKamarKos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [hoveredCard, setHoveredCard] = useState(null); // State untuk melacak kartu yang sedang di-hover
 
   useEffect(() => {
+    AOS.init({
+      duration: 2000,
+    });
+
     getRooms();
   }, []);
 
@@ -73,71 +79,83 @@ const Kos2 = () => {
 
   return (
     <Container>
-      <br />
-      <h1 className="my-4 text-center">Cari Kamar Sesuai Seleramu</h1>
-      <br />
-      <SearchContainer>
-        <SearchInput
-          type="text"
-          placeholder="Cari kamar..."
-          value={searchTerm}
-          onChange={handleSearchChange}
-        />
-        <select value={searchType} onChange={handleTypeChange}>
-          <option value="">Semua</option>
-          <option value="VVIP">VVIP</option>
-          <option value="VIP">VIP</option>
-          <option value="Reguler">Reguler</option>
-        </select>
-      </SearchContainer>
-      <br />
-      <br />
-      <Row>
-        {currentKosItems.map((room) => (
-          <Col key={room.id} md={3} className="mb-4">
-            <Card
-              onClick={() => handleCardClick(room.id)}
-              style={{ cursor: "pointer" }}
-            >
-              <Card.Img
-                variant="top"
-                src={room.url}
-                className="positioned-image"
-                style={{ width: "100%", height: "200px", objectFit: "cover" }}
-              />
-              <Card.Body>
-                <Card.Title>{room.kode}</Card.Title>
-                <Card.Text>
-                  <strong>Tipe:</strong> {room.tipe}
-                  <br />
-                  <strong>Ukuran Kamar:</strong> {room.ukuran}
-                  <br />
-                  <strong>Harga:</strong> {room.price}
-                </Card.Text>
-              </Card.Body>
-            </Card>
-          </Col>
-        ))}
-      </Row>
-      <Pagination className="justify-content-center mt-4">
-        <Pagination.Prev
-          onClick={() => handlePageChange(activePage - 1)}
-          disabled={activePage === 1}
-        />
-        {Array.from({ length: totalPages }).map((_, index) => (
-          <Pagination.Item
-            key={index + 1}
-            active={index + 1 === activePage}
-            onClick={() => handlePageChange(index + 1)}
+      <div data-aos="zoom-in-down">
+        <br />
+        <h1 className="my-4 text-center">Cari Kamar Sesuai Seleramu</h1>
+        <br />
+        <div className="d-flex justify-content-center mb-4">
+          <input
+            type="text"
+            placeholder="Cari kamar..."
+            value={searchTerm}
+            onChange={handleSearchChange}
+            className="form-control w-50 me-2"
+          />
+          <select
+            value={searchType}
+            onChange={handleTypeChange}
+            className="form-select w-auto"
           >
-            {index + 1}
-          </Pagination.Item>
-        ))}
-        <Pagination.Next
-          onClick={() => handlePageChange(activePage + 1)}
-          disabled={activePage === totalPages}
-        />
-      </Pagination>
+            <option value="">Semua</option>
+            <option value="VVIP">VVIP</option>
+            <option value="VIP">VIP</option>
+            <option value="Reguler">Reguler</option>
+          </select>
+        </div>
+        <Row>
+          {currentKosItems.map((room) => (
+            <Col key={room.id} md={3} className="mb-4">
+              <Card
+                onClick={() => handleCardClick(room.id)}
+                onMouseEnter={() => setHoveredCard(room.id)}
+                onMouseLeave={() => setHoveredCard(null)}
+                style={{
+                  cursor: "pointer",
+                  transform:
+                    hoveredCard === room.id ? "scale(1.05)" : "scale(1)",
+                  transition: "transform 0.3s ease-in-out",
+                }}
+              >
+                <Card.Img
+                  variant="top"
+                  src={room.url}
+                  className="positioned-image"
+                  style={{ width: "100%", height: "200px", objectFit: "cover" }}
+                />
+                <Card.Body>
+                  <Card.Title>{room.kode}</Card.Title>
+                  <Card.Text>
+                    <strong>Tipe:</strong> {room.tipe}
+                    <br />
+                    <strong>Ukuran Kamar:</strong> {room.ukuran}
+                    <br />
+                    <strong>Harga:</strong> {room.price}
+                  </Card.Text>
+                </Card.Body>
+              </Card>
+            </Col>
+          ))}
+        </Row>
+        <Pagination className="justify-content-center mt-4">
+          <Pagination.Prev
+            onClick={() => handlePageChange(activePage - 1)}
+            disabled={activePage === 1}
+          />
+          {Array.from({ length: totalPages }).map((_, index) => (
+            <Pagination.Item
+              key={index + 1}
+              active={index + 1 === activePage}
+              onClick={() => handlePageChange(index + 1)}
+            >
+              {index + 1}
+            </Pagination.Item>
+          ))}
+          <Pagination.Next
+            onClick={() => handlePageChange(activePage + 1)}
+            disabled={activePage === totalPages}
+          />
+        </Pagination>
+      </div>
     </Container>
   );
 };

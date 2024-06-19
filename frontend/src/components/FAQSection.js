@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Section,
   FAQContainer,
@@ -8,6 +8,8 @@ import {
   ImageContainer,
   FAQContent,
 } from "../styles/FAQSectionStyles";
+import AOS from "aos";
+import "aos/dist/aos.css";
 import faqImage from "../img/faq.png";
 
 const faqItemsPencari = [
@@ -75,37 +77,43 @@ const FAQSection = () => {
   };
 
   const faqItems = faqType === "pencari" ? faqItemsPencari : faqItemsPemilik;
-
+  useEffect(() => {
+    AOS.init({
+      duration: 1500,
+    });
+  }, []);
   return (
     <Section>
-      <h2>Frequently Asked Questions</h2>
-      <br></br>
-      <br></br>
-      <br></br>
-      <FAQContainer>
-        <ImageContainer>
-          <img src={faqImage} alt="FAQ" />
-        </ImageContainer>
-        <FAQContent>
-          <p>
-            Jika anda mengalami masalah silahkan baca FAQ dibawah ini agar
-            masalah anda dapat teratasi.
-          </p>
-          <p>
-            Silahkan klik menu Hubungi Kami apabila tidak menemukan solusi untuk
-            masalah yang sedang anda alami.
-          </p>
-          <br></br>
-          {faqItems.map((item, index) => (
-            <FAQItem key={index}>
-              <Question onClick={() => handleToggle(index)}>
-                {item.question}
-              </Question>
-              {activeIndex === index && <Answer>{item.answer}</Answer>}
-            </FAQItem>
-          ))}
-        </FAQContent>
-      </FAQContainer>
+      <div data-aos="fade-up">
+        <h2>Frequently Asked Questions</h2>
+        <br></br>
+        <br></br>
+        <br></br>
+        <FAQContainer>
+          <ImageContainer>
+            <img src={faqImage} alt="FAQ" />
+          </ImageContainer>
+          <FAQContent>
+            <p>
+              Jika anda mengalami masalah silahkan baca FAQ dibawah ini agar
+              masalah anda dapat teratasi.
+            </p>
+            <p>
+              Silahkan klik menu Hubungi Kami apabila tidak menemukan solusi
+              untuk masalah yang sedang anda alami.
+            </p>
+            <br></br>
+            {faqItems.map((item, index) => (
+              <FAQItem key={index}>
+                <Question onClick={() => handleToggle(index)}>
+                  {item.question}
+                </Question>
+                {activeIndex === index && <Answer>{item.answer}</Answer>}
+              </FAQItem>
+            ))}
+          </FAQContent>
+        </FAQContainer>
+      </div>
     </Section>
   );
 };

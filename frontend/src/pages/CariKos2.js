@@ -1,8 +1,8 @@
-import React from 'react';
-import Kos2 from '../components/Kos2';
-import Footer from '../components/Footer';
-import styled from 'styled-components';
-import Header2 from '../components/Header2';
+import React from "react";
+import Kos2 from "../components/Kos2";
+import styled from "styled-components";
+import Header2 from "../components/Header2";
+import Footer2 from "../components/Footer2";
 
 const Content = styled.div`
   padding-top: 60px;
@@ -22,7 +22,7 @@ function Cari2() {
       <br></br>
       <br></br>
       <br></br>
-      <Footer />
+      <Footer2 />
     </div>
   );
 }

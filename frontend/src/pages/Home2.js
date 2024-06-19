@@ -1,11 +1,12 @@
-import React from 'react';
-import Header2 from '../components/Header2';
-import HeroSection from '../components/HeroSection';
-import Footer from '../components/Footer';
-import styled from 'styled-components';
-import KeunggulanSection from '../components/KeunggulanSection'; 
-import KosList2 from '../components/KosList2';
-import FAQSection from '../components/FAQSection';
+import React from "react";
+import Header2 from "../components/Header2";
+import HeroSection from "../components/HeroSection";
+
+import styled from "styled-components";
+import KeunggulanSection from "../components/KeunggulanSection";
+import KosList2 from "../components/KosList2";
+import FAQSection from "../components/FAQSection";
+import Footer2 from "../components/Footer2";
 
 const Content = styled.div`
   padding-top: 60px;
@@ -22,7 +23,7 @@ function Home2() {
         <KeunggulanSection />
         <FAQSection />
       </Content>
-      <Footer />
+      <Footer2 />
     </div>
   );
 }

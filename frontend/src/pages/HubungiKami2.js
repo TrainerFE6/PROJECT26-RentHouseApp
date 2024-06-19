@@ -1,8 +1,8 @@
-import React from 'react';
-import Header2 from '../components/Header2';
-import Footer from '../components/Footer';
-import styled from 'styled-components';
-import ContactSection from '../components/ContactSection';
+import React from "react";
+import Header2 from "../components/Header2";
+import styled from "styled-components";
+import ContactSection2 from "../components/ContactSection2.js";
+import Footer2 from "../components/Footer2";
 
 const Content = styled.div`
   padding-top: 60px;
@@ -15,10 +15,10 @@ function Kontak2() {
       <br></br>
       <br></br>
       <Content>
-        <ContactSection />
+        <ContactSection2 />
       </Content>
       <br></br>
-      <Footer />
+      <Footer2 />
     </div>
   );
 }

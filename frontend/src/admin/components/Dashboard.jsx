@@ -1,100 +1,105 @@
-import React, { useState } from "react";
-import { Container, Row, Col, Table, Form, Pagination } from "react-bootstrap";
+import React, { useState, useEffect } from "react";
+import {
+  Container,
+  Row,
+  Col,
+  Table,
+  Form,
+  Pagination,
+  Button,
+} from "react-bootstrap";
+import axios from "axios";
+import TableContacUs from "./TableContactUs";
 
 const Dashboard = () => {
-  const initialData = [
-    {
-      id: 1,
-      name: "John Doe",
-      email: "john@example.com",
-      phone: "123-456-7890",
-    },
-    {
-      id: 2,
-      name: "Jane Smith",
-      email: "jane@example.com",
-      phone: "098-765-4321",
-    },
-    {
-      id: 3,
-      name: "Alice Johnson",
-      email: "alice@example.com",
-      phone: "555-555-5555",
-    },
-    {
-      id: 4,
-      name: "Bob Brown",
-      email: "bob@example.com",
-      phone: "444-444-4444",
-    },
-    {
-      id: 5,
-      name: "Bob Brown",
-      email: "bob@example.com",
-      phone: "444-444-4444",
-    },
-    {
-      id: 6,
-      name: "Bob Brown",
-      email: "bob@example.com",
-      phone: "444-444-4444",
-    },
-    {
-      id: 7,
-      name: "Bob Brown",
-      email: "bob@example.com",
-      phone: "444-444-4444",
-    },
-    {
-      id: 8,
-      name: "Bob Brown",
-      email: "bob@example.com",
-      phone: "444-444-4444",
-    },
-    {
-      id: 9,
-      name: "Bob Brown",
-      email: "bob@example.com",
-      phone: "444-444-4444",
-    },
-    {
-      id: 10,
-      name: "Bob Brown",
-      email: "bob@example.com",
-      phone: "444-444-4444",
-    },
-  ];
-
-  const [data, setData] = useState(initialData);
+  const [data, setData] = useState([]);
   const [search, setSearch] = useState("");
   const [entries, setEntries] = useState(5);
+  const [filteredData, setFilteredData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalKamar, setTotalKamar] = useState(0);
+  const [totalPenyewaKost, setTotalPenyewaKost] = useState(0);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/personal-info");
+        const sortedData = response.data.sort((a, b) => a.id - b.id); // Urutkan berdasarkan ID
+        setData(sortedData);
+        setFilteredData(sortedData); // Set filteredData juga dengan data yang sudah diurutkan
+      } catch (error) {
+        console.error("There was an error fetching the data!", error);
+      }
+    };
 
+    fetchData();
+  }, []);
+
+  //Get jumlah data tabel kamar
+  useEffect(() => {
+    const fetchKamar = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/room");
+        setTotalKamar(response.data.length); // Set total kamar dari jumlah data yang diterima
+      } catch (error) {
+        console.error("There was an error fetching the rooms data!", error);
+      }
+    };
+
+    fetchKamar();
+  }, []);
+  useEffect(() => {
+    const fetchKamar = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/apply-rent");
+        setTotalPenyewaKost(response.data.length); // Set total kamar dari jumlah data yang diterima
+      } catch (error) {
+        console.error("There was an error fetching the rooms data!", error);
+      }
+    };
+
+    fetchKamar();
+  }, []);
   const handleSearch = (e) => {
     const value = e.target.value.toLowerCase();
     setSearch(value);
-    const filteredData = initialData.filter(
+    const filtered = data.filter(
       (item) =>
-        item.name.toLowerCase().includes(value) ||
+        item.full_name.toLowerCase().includes(value) ||
         item.email.toLowerCase().includes(value) ||
         item.phone.includes(value)
     );
-    setData(filteredData);
+    setFilteredData(filtered);
+    setCurrentPage(1); // Reset halaman saat melakukan pencarian
   };
 
   const handleEntriesChange = (e) => {
     setEntries(Number(e.target.value));
     setCurrentPage(1);
   };
+
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
+  };
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`http://localhost:5000/personal-info/${id}`);
+      const updatedData = data.filter((item) => item.id !== id);
+      setData(updatedData);
+      setFilteredData(updatedData);
+      alert(`Data with ID ${id} has been deleted.`);
+    } catch (error) {
+      console.error(`Error deleting data with ID ${id}:`, error);
+    }
   };
 
   const indexOfLastEntry = currentPage * entries;
   const indexOfFirstEntry = indexOfLastEntry - entries;
-  const currentEntries = data.slice(indexOfFirstEntry, indexOfLastEntry);
+  const currentEntries = filteredData.slice(
+    indexOfFirstEntry,
+    indexOfLastEntry
+  );
 
-  const totalPages = Math.ceil(data.length / entries);
+  const totalPages = Math.ceil(filteredData.length / entries);
   return (
     <div className="p-4">
       <h1>Dashboard</h1>
@@ -111,7 +116,9 @@ const Dashboard = () => {
                     <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                       Total Penyewa Kost
                     </div>
-                    <div class="h5 mb-0 font-weight-bold text-gray-800">5</div>
+                    <div class="h5 mb-0 font-weight-bold text-gray-800">
+                      {totalPenyewaKost}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -129,7 +136,9 @@ const Dashboard = () => {
                   <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                     Total Kamar
                   </div>
-                  <div class="h5 mb-0 font-weight-bold text-gray-800">5</div>
+                  <div class="h5 mb-0 font-weight-bold text-gray-800">
+                    {totalKamar}
+                  </div>
                 </div>
               </div>
             </div>
@@ -162,19 +171,32 @@ const Dashboard = () => {
             <Table hover className="custom-table">
               <thead>
                 <tr>
-                  <th>ID</th>
-                  <th>Name</th>
+                  <th>No</th>
+                  <th>Nama Lengkap</th>
+                  <th>Jenis Kelamin</th>
                   <th>Email</th>
-                  <th>Phone</th>
+                  <th>No HP</th>
+                  <th>Alamat</th>
+                  <th>Action</th>
                 </tr>
               </thead>
               <tbody>
-                {currentEntries.map((row) => (
+                {currentEntries.map((row, index) => (
                   <tr key={row.id}>
-                    <td>{row.id}</td>
-                    <td>{row.name}</td>
+                    <td>{indexOfFirstEntry + index + 1}</td>
+                    <td>{row.full_name}</td>
+                    <td>{row.gender}</td>
                     <td>{row.email}</td>
                     <td>{row.phone}</td>
+                    <td>{row.address}</td>
+                    <td>
+                      <Button
+                        variant="danger"
+                        onClick={() => handleDelete(row.id)}
+                      >
+                        Delete
+                      </Button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -193,6 +215,8 @@ const Dashboard = () => {
           </div>
         </div>
       </Container>
+
+      <TableContacUs />
     </div>
   );
 };
