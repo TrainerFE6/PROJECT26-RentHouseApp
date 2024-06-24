@@ -1,8 +1,19 @@
-import { Sequelize } from "sequelize";
+let mysql = require('mysql');
 
-const db = new Sequelize("house_db", "root", "", {
-  host: "localhost",
-  dialect: "mysql",
+let connection = mysql.createConnection({
+  host: 'educalab.id',
+  user: 'WfAjHThDptCwP8FA',
+  password: 'VxqvThhECCDRVavr',
+  database: 'Ckeoeq2LSZGLA110',
+  port: 3307
 });
 
-export default db;
+connection.connect(function(err){
+  if(!err) {
+    console.log(err);
+  } else {
+    console.log('Terkonesi Dengan Databse!')
+  }
+});
+
+module.exports = connection;
